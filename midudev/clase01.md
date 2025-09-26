@@ -1,4 +1,4 @@
-# <img width="48" height="48" src="https://img.icons8.com/color/48/typescript.png" alt="typescript"/> CLASE 1 :computer:
+# <img width="48" height="48" src="https://img.icons8.com/color/48/typescript.png" alt="typescript"/> CLASE 1
 
 ---
 
@@ -6,7 +6,7 @@
 
 - Es JavaScript con una sintaxis para tipos.
 
-- Es un superset de JavaScript, le agrega **tipos estáticos**(su base es JavaScript).
+- Es un superset de JavaScript, le agrega **tipos estáticos** y objetos basados en clases.
 
 - No funciona en tiempo de ejecución, se compila y llega al navegador como JavaScript.
 
@@ -17,7 +17,9 @@
 ## <img width="48" height="48" src="https://img.icons8.com/color/48/typescript.png" alt="typescript"/> ¿Por qué aprenderlo?
 
 - Se está utilizando cada vez más. Hay más opciones de trabajo.
-
+- Mejora la calidad del código y reduce errores.
+- Facilita el mantenimiento y la escalabilidad de las aplicaciones.
+- Mejora la experiencia del desarrollador.
 - Es sencillo de aprender.
 
 ---
@@ -58,16 +60,16 @@ suma(2,3)
 ## <img width="48" height="48" src="https://img.icons8.com/color/48/typescript.png" alt="typescript"/> Concepto inferir
 
 ```TypeScript
-let saludo:string = 'hola mundo'
-// infiere que es de tipo string, no puede volver a tener reasignado un valor que no sea de string
-let nombre = 'María Eugenia'
+let saludo = 'hola mundo'
+// infiere que es de tipo string por el valor asignado, no es necesario asignarlo manualmente, además, no puede cambiar de tipo
+let saludo = 123 // error
 ```
 
 ---
 
 ## <img width="48" height="48" src="https://img.icons8.com/color/48/typescript.png" alt="typescript"/> TypeScript compilación
 
-**TS** funciona en tiempo de **compilación** y **JS** funciona en tiempo de **navegacion**
+**TS** funciona en tiempo de **compilación** y **JS** funciona en tiempo de **navegación**, eso significa que **TS** no se ejecuta en el navegador, sino que se compila a **JS** y es ese código **JS** el que se ejecuta en el navegador.
 
 ---
 
@@ -93,9 +95,12 @@ let nombre = 'María Eugenia'
 
 - boolean
 
-- any, asi IGNORA el tipado de TS, por eso hay que evitarlo si o si
+- any
 
-- unknown, no sabemos cual es el tipo
+  - Este tipo es un escape hatch, es como si no tuviera tipado, puede ser cualquier cosa, es como JavaScript. Hay que evitarlo.
+
+- unknown
+  - no sabemos cual es el tipo de dato, pero no es any, es un tipo seguro, no podemos hacer nada con el dato hasta que no sepamos que tipo es.
 
 Para los tipos básicos no es necesario tipar cuando declaro las variables.
 
@@ -155,13 +160,13 @@ avengers.forEach(avenger => {
 })
 ```
 
-Dentro del console.log cuando tengo avengers. veo los metodos del string, TS con el **.forEach()** sabe qeu es un array de string e infiere que avenger es un string. Pasa con todas las funciones de array, por ejemplo con **.map()**
+Dentro del console.log cuando tengo avengers. veo los metodos del string, TS con el **.forEach()** sabe que es un array de string e infiere que avenger es un string. Pasa con todas las funciones de array, por ejemplo con **.map()**
 
 ---
 
 ## <img width="48" height="48" src="https://img.icons8.com/color/48/typescript.png" alt="typescript"/> Tipar "arrow functions"
 
-Ojo esto esta sin tipar, es solo para indicar la parte del callback.
+Este ejemplo está sin tipar, es solo para indicar la parte del callback.
 
 <img src="https://github.com/eugenia1984/aprende-TypeScript-curso-intensivo/assets/72580574/efe91de5-ad93-45bf-bbd8-9f1667c6b400" width="350" alt="arrow function" />
 
@@ -177,7 +182,7 @@ sayHiFromFunction((name: string) => {
 })
 ```
 
-**void** porque no tiene un **return**, si no usamos **void** devuelve **undefined** explicitamente. Si tengo void e igualmente devuelve algo, no hya problemas en la compilación.
+Se establece un **void** porque la callback no tiene un **return** explícito, si no usamos **void** entonces tendremos un valor **undefined**. Si tengo void e igualmente devuelve algo, no hay problemas en la compilación.
 
 - Un modo de tipar las arrow functions
 
@@ -208,7 +213,7 @@ function throwError(message: string): never {
 
 VOID
 
-Cuando la función no va a devolver nada, aunque puede tener el return implicito y llegar a devolver.
+Una función que no devuelve nada, no tiene return explícito, pero si tiene un return implícito (undefined)
 
 ```TypeScript
 const sayHiFromFunction = (fn: (name:string) => void) => {
@@ -240,11 +245,17 @@ let hero = {
 
 Lo que NO puedo hacer con TS es agregarle un nuevo par key:value al objeto, si queiria agregar power me lo marca como error y avisa que no existe.
 
-**TS** nos hace un **contrato** de nuestros objetos. Es una de las ventajas, ya que con javaScript podemos ir agregando a lo loco lo que queramos en el objeto.
+```TypeScript
+hero.power = 100 // error, no existe la key power en hero
+```
+
+**TS** nos hace un **contrato** de nuestros objetos. Es una de las ventajas, ya que con javaScript podría agregarle cualquier key:value y no me daría error.
 
 ---
 
 ## <img width="48" height="48" src="https://img.icons8.com/color/48/typescript.png" alt="typescript"/> Type Alias
+
+Un **type** es un alias, una forma de reutilizar tipos.
 
 ```TypeScript
 type Hero = {
@@ -260,6 +271,7 @@ let hero: Hero = {
 // hero.name= 1234434
 // esto no es posible porque ya infiere que name es string
 
+// En esta función no utilizamos el type Hero, los parametros son independientes
 function createHero(name: string, age:number): Hero {
   return { name, age  }
 }
@@ -267,9 +279,11 @@ function createHero(name: string, age:number): Hero {
 const thor = createHero('Thor', 1500)
 ```
 
-Otro modo, aca voy a tener que desestructurar:
+- Si quiero usar el type Hero en la función, lo puedo hacer:
 
 ```TypeScript
+// Al usar el type Hero en la función, los parametros son un objeto que cumple con la forma del type Hero
+// pero no son independientes, necesitamos desestructurar el objeto
 function createHero2(hero: Hero): Hero {
   const {name, age} = hero
   return { name, age  }
@@ -284,12 +298,22 @@ const thor2 = createHero({name:'Thor', age: 1500})
 
 <img src="https://github.com/eugenia1984/aprende-TypeScript-curso-intensivo/assets/72580574/5edb50a4-7ccf-4916-9c0d-16d88549a1a6" width="480" alt="optional properties" />
 
+Si quiero que una propiedad de un type sea opcional, es decir que pueda o no estar, podemos lograrlo con el uso del **?** en la definición del type:
+
+```TypeScript
+const thor: Hero = {
+  name: 'Thor',
+  age: 1500,
+  isActive?: true // opcional
+}
+```
+
 ---
 
 ## <img width="48" height="48" src="https://img.icons8.com/color/48/typescript.png" alt="typescript"/> Optional chaining operator
 
 ```TypeScript
-let name =  data?name
+let name =  data?.name
 ```
 
 Si existe **data** entonces busco el valor de la key **name**
@@ -297,33 +321,89 @@ Si existe **data** entonces busco el valor de la key **name**
 Le puedo agregar un valor por defecto:
 
 ```TypeScript
-thorn.id ?? 'No tiene valor'
+thor.id ?? 'No tiene valor'
 ```
 
 ---
 
-## <img width="48" height="48" src="https://img.icons8.com/color/48/typescript.png" alt="typescript"/> Mutabilidad
+## <img width="48" height="48" src="https://img.icons8.com/color/48/typescript.png" alt="typescript"/> Inmutabilidad
+
+Si quiero que un objeto no pueda ser modificado después de su creación, puedo usar el modificador **readonly** en las propiedades del objeto:
+
+```TypeScript
+type Hero = {
+  readonly id: number
+  name: string
+  age: number
+}
+
+const thor: Hero = {
+  id: 1,
+  name: 'Thor',
+  age: 1500
+}
+
+// thor.id = 2 // error, no se puede modificar
+```
 
 ---
 
 ## <img width="48" height="48" src="https://img.icons8.com/color/48/typescript.png" alt="typescript"/> Object freeze
 
+En TypeScript (y en JavaScript), Object.freeze() sirve para volver inmutable un objeto en tiempo de ejecución.
+
+Es decir: una vez que lo “congelas”, no puedes agregar, quitar o modificar propiedades de ese objeto.
+
 ```TypeScript
-type Hero = {
-  readonly id?: number
-  name: string
-  age: number
-  isActive?: boolean // ? -> opcional, puede tenerlo o no
+const hero = {
+  name: "Thor",
+  age: 1500
 }
+
+Object.freeze(hero)
+
+hero.age = 2000   // ❌ No cambia
+console.log(hero.age) // 1500
 ```
 
-El **id** al ser readonly es de tipo lectura, pero **no es inmutable**, al ser opcional al pasar a JavaScript no se ve en el objeto, para que realmente sea inmutable hay que utilizar JavaScript y el **object freeze**:
+Aquí Object.freeze evita que age se modifique en tiempo de ejecución.
+
+## <img width="48" height="48" src="https://img.icons8.com/color/48/typescript.png" alt="typescript"/> Diferencia con readonly en TypeScript
+
+- readonly → chequeo en tiempo de compilación (TypeScript).
+
+- Object.freeze() → protección en tiempo de ejecución (JavaScript).
+
+```TypeScript
+type Hero = {
+  readonly name: string
+  age: number
+}
+
+const ironman: Hero = { name: "Tony", age: 45 }
+
+ironman.age = 50       // ✅ permitido (no es readonly)
+ironman.name = "Stark" // ❌ Error en TS (tiempo de compilación)
+```
+
+Cuando usas Object.freeze, TypeScript puede inferir que el objeto es readonly:
+
+```TypeScript
+const hero = Object.freeze({
+  name: "Thor",
+  age: 1500
+})
+
+// hero.age = 2000   // ❌ Error en TS: read-only
+```
+
+Esto funciona porque TS entiende que un objeto “congelado” se trata como Readonly<T>.
 
 ---
 
-## <img width="48" height="48" src="https://img.icons8.com/color/48/typescript.png" alt="typescript"/> Template union types
+## <img width="48" height="48" src="https://img.icons8.com/color/48/typescript.png" alt="typescript"/> Template Union Types
 
-Creo el tipo HeroId para usarlo dentro de otro tipo(Hero)
+Son tipos que usan template literal types (cadenas dinámicas) combinados con union types, para construir cadenas tipadas de manera automática.
 
 ```TypeScript
 type HeroId = `${string}-${string}-${string}-${string}-${string}`
@@ -351,7 +431,7 @@ Un **type** puede ser una **RegEx**
 
 ## <img width="48" height="48" src="https://img.icons8.com/color/48/typescript.png" alt="typescript"/> Union Types
 
-Es como un join en sql
+Un union type permite que una variable, parámetro o retorno sea de varios tipos posibles, no solo uno.
 
 Ejemplo 1: puede ser de tipo number o string:
 
@@ -380,7 +460,7 @@ type Hero = {
 }
 ```
 
-Para usar con animaciones, pueden ser booleanas o un nuemro, si es un número por defecto son 200ms
+Para usar con animaciones, pueden ser booleanas o un número, si es un número por defecto son 200ms
 
 ```TypeScript
 const enableAnimationDuration:  boolean | number = 200
@@ -388,11 +468,11 @@ const enableAnimationDuration:  boolean | number = 200
 
 ---
 
-## <img width="48" height="48" src="https://img.icons8.com/color/48/typescript.png" alt="typescript"/> Intersection types
+## <img width="48" height="48" src="https://img.icons8.com/color/48/typescript.png" alt="typescript"/> Intersection Types
 
-Para extender tipos, se crean tipos a travesde otros tipos
+Un intersection type combina múltiples tipos en uno solo.
 
-Es al reves del **union**(que es un OR), es un AND.
+Se escribe con & y significa: "debe cumplir con todos estos tipos al mismo tiempo".
 
 ```TypeScript
 type HeroBasicInfo = {
@@ -402,14 +482,15 @@ type HeroBasicInfo = {
 
 type HeroProperties = {
   readonly id?: HeroId,
-  name: string,
-  age: number,
   isActive?: boolean,
   powerScale?: HeroPowerScale
 }
 
+// Generamos el tipo Hero como la intersección de HeroBasicInfo y HeroProperties
 type Hero = HeroBasicInfo & HeroProperties
 
+// Usamos HeroBasicInfo para tipar el parámetro de la función
+// Usamos Hero como tipo de retorno
 function createHero(hero: HeroBasicInfo): Hero {
   const { name, age } = hero
 
@@ -425,7 +506,9 @@ function createHero(hero: HeroBasicInfo): Hero {
 
 ## <img width="48" height="48" src="https://img.icons8.com/color/48/typescript.png" alt="typescript"/> Type indexing
 
-Para poder reutilizar partes:
+El type indexing (indexación de tipos) es la forma de acceder al tipo de una propiedad dentro de un objeto/alias.
+
+Es como cuando en JavaScript accedemos a una propiedad con obj["prop"], pero en este caso lo hacemos en el sistema de tipos.
 
 ```TypeScript
 type HeroProperties2 = {
@@ -446,25 +529,22 @@ const addressHero: HeroProperties2['address'] = {
 
 ## <img width="48" height="48" src="https://img.icons8.com/color/48/typescript.png" alt="typescript"/> Type from value y typeof
 
+En JavaScript, typeof se usa en runtime para saber el tipo de un valor:
+
+```JavaScript
+typeof 123 // 'number'
+typeof 'hola' // 'string'
+```
+
+En TypeScript, typeof se usa en tiempo de compilación para extraer el tipo de un valor (constante, objeto, función, etc.) y reutilizarlo como un alias de tipo.
+
 ```TypeScript
 const address: {
   planet: 'Earth',
   city: 'Madrid'
 }
 
-// para crear un tipo a partir de una constante
-type Address = typeof address
-```
-
-**typeof** en JavaScript es para ver de que tipo es, pero en TypeScript es como un supra conjunto que hace muchas más cosas, extraemos los **tipos** (de un objecto, funciones, etc).
-
-```TypeScript
-const address: {
-  planet: string,
-  city: string
-}
-
-// para crear un tipo a partir de una constante
+// Aqui Address es { planet: string, city: string }, deducido del objeto
 type Address = typeof address
 
 const addressTwitch: Address = {
@@ -477,7 +557,9 @@ const addressTwitch: Address = {
 
 ## <img width="48" height="48" src="https://img.icons8.com/color/48/typescript.png" alt="typescript"/> Type from function return
 
-**ReturnType** -> quiero que me recuperes lo que devuelve la función que tengo entre los `<>`
+Podemos extraer el tipo de retorno de una función:
+
+**ReturnType** -> toma lo que devuelve la función y lo convierte en un tipo.
 
 ```TypeScript
 function createAddress() {
@@ -490,42 +572,44 @@ function createAddress() {
 type Address2 = ReturnType<typeof createAddress>
 ```
 
-Me permite extraer los tipos de cualquier funcion, para poder reutilizarlos en otro lado.
-
 ---
 
 ## <img width="48" height="48" src="https://img.icons8.com/color/48/typescript.png" alt="typescript"/> Arrays
 
-Voy a crear un array vacio, que va a tener elementos de tipo **string**
+Un array en TS funciona como en JS, pero le podemos decir explícitamente qué tipos de datos acepta.
+
+Eso nos da seguridad: no podemos meter datos que no correspondan.
+
+- Sintaxis 1 (la más usada):
 
 ```TypeScript
 const languajes:string[] = []
 languajes.push('JavaScript')
+// Lo cual no me va a permitir agregar un number, un booleano u otro dato que no sea string:
+// languages.push(123) ❌ Error
 ```
 
-Lo cual no me va a permitir agregar un number, un booleano u otro dato que no sea string:
-
-```TypeScript
-// lenguajes.push(2)
-// lenguajes.push(false)
-```
-
-Otra sintaxis:
+- Sintaxis 2 (genérica):
 
 ```TypeScript
 const lenguages: Array<string>
 ```
 
-Para que pueda tener tanto string como number:
+### Arrays con Union Types
+
+Se permite más de un tipo, pero solo los que definas.
 
 ```TypeScript
 const languajes: (string | number)[] = []
 ```
 
-Tambien puede ser un array de los tipos de datos
+### Arrays de tipos personalizados (Type Alias)
 
 ```TypeScript
-const heroWithBasicInfo :HeroBasicInfo[] = []
+type Hero = { name: string; age: number }
+
+const heroes: Hero[] = []
+heroes.push({ name: "Thor", age: 1500 }) // ✅
 ```
 
 ---
@@ -538,7 +622,7 @@ Para armar el Tres en raya (Ta-Te-Ti):
 type CellValue = 'X' | 'O' | ''
 ```
 
-**TUPLA**, un array que tiene un limite fijado de longitud
+Una `tupla` es un array especial con longitud fija y tipos específicos en cada posición:
 
 ```TypeScript
 type GameBoard = [
@@ -558,11 +642,35 @@ const gameBoard: GameBoard = [
 ]
 ```
 
--> Otro ejemplo con colores RGB:
+-> Otro ejemplo de tuplas: colores RGB:
 
 ```TypeScript
 type RGB = [number, number, number]
-const rgb: RGB = [255, 255, 0] // 0 - 255
+
+const color: RGB = [255, 100, 50] // ✅
+```
+
+### Inferencia automática
+
+Si inicializas un array con valores, TS infiera el tipo automáticamente:
+
+```TypeScript
+const numbers = [1, 2, 3]
+// numbers: number[]
+
+const mix = [1, "hola"]
+// mix: (string | number)[]
+
+```
+
+### Arrays readonly
+
+Si quieres que no se pueda modificar:
+
+```TypeScript
+const numbers: readonly number[] = [1, 2, 3]
+
+// numbers.push(4) ❌ Error
 ```
 
 ---
